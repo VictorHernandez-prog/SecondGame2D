@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerControls : MonoBehaviour
 {
@@ -9,11 +10,16 @@ public class PlayerControls : MonoBehaviour
      Collider2D coll;
     SpriteRenderer sr;
     HideInLocker Hide;
+    Vector3 movement;
 
     public enum PlayerState { Idle, Vertical, Horizontal }
     public PlayerState s = PlayerState.Idle;
     public float forceEnds = 0.1f;
-    public float Speed = 0.5f;
+    public float Speed;
+    public float Walking = 60f;
+    public float Running = 90f;
+    public float Horizontal;
+    public float Vertical;
     void Start()
     {
         Hide = GetComponent<HideInLocker>();
@@ -30,44 +36,42 @@ public class PlayerControls : MonoBehaviour
             ManageInput();
             HandleMovementState();
         }
-        SwitchStates();
+       //// SwitchStates(); 
 
     }
+    void FixedUpdate()
+    {
+        rb.linearVelocity = new Vector3(movement.x * Speed, movement.y * Speed, movement.z * Speed);
+    }
+
 
     void ManageInput()
     {
-        if (Input.GetKey(KeyCode.D))
-        {
-            rb.AddForce(Vector3.right * Speed);
-        }
+        movement = new Vector3(Horizontal, Vertical, 0).normalized;
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            rb.AddForce(Vector3.left * Speed);
+            Speed = Running;
         }
-
-        if (Input.GetKey(KeyCode.W))
+        else
         {
-            rb.AddForce(Vector3.up * Speed);
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            rb.AddForce(Vector3.down * Speed);
+            Speed = Walking;
         }
     }
 
     void SwitchStates()
     {
-        switch(s) 
+        switch (s)
         {
             case PlayerState.Idle:
                 sr.color = Color.red;
-                    break;
+                break;
 
             case PlayerState.Vertical:
                 sr.color = Color.blue;
-                    break;
+                break;
 
             case PlayerState.Horizontal:
                 sr.color = Color.black;
@@ -75,7 +79,6 @@ public class PlayerControls : MonoBehaviour
 
         }
     }
-
     public void EnterLocker()
     {
         Physics2D.IgnoreLayerCollision(6, 7, true);
