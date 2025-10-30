@@ -12,7 +12,7 @@ public class PlayerControls : MonoBehaviour
     HideInLocker Hide;
     Vector3 movement;
 
-    public enum PlayerState { Idle, Vertical, Horizontal }
+    public enum PlayerState { Idle, Walking, Sprinting }
     public PlayerState s = PlayerState.Idle;
     public float forceEnds = 0.1f;
     public float Speed;
@@ -34,9 +34,9 @@ public class PlayerControls : MonoBehaviour
         if (!Hide.isPlayerHiding) // disable movement while hiding
         {
             ManageInput();
+            SwitchStates();
             HandleMovementState();
         }
-       //// SwitchStates(); 
 
     }
     void FixedUpdate()
@@ -69,14 +69,13 @@ public class PlayerControls : MonoBehaviour
                 sr.color = Color.red;
                 break;
 
-            case PlayerState.Vertical:
+            case PlayerState.Walking:
                 sr.color = Color.blue;
                 break;
 
-            case PlayerState.Horizontal:
-                sr.color = Color.black;
+            case PlayerState.Sprinting:
+                sr.color = Color.green;
                 break;
-
         }
     }
     public void EnterLocker()
@@ -99,16 +98,13 @@ public class PlayerControls : MonoBehaviour
     void HandleMovementState()
     {
         Vector2 velocity = rb.linearVelocity;
+
         if (velocity.magnitude > forceEnds)
         {
-            if (Mathf.Abs(velocity.x) > Mathf.Abs(velocity.y))
-            {
-                s = PlayerState.Horizontal;
-            }
+            if (Input.GetKey(KeyCode.LeftShift))
+                s = PlayerState.Sprinting;
             else
-            {
-            s = PlayerState.Vertical;
-            }
+                s = PlayerState.Walking;
         }
         else
         {
