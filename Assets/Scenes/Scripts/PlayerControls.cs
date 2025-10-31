@@ -1,8 +1,6 @@
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
-
 public class PlayerControls : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
